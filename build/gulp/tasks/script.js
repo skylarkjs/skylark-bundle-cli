@@ -7,20 +7,29 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     replace = require('gulp-replace'),
     rename = require("gulp-rename"),
+    texttojs = require('gulp-texttojs'),
     util = require('../utils'),
-     fs = require('fs');
+    fs = require('fs');
 
 
-var src = [util.src +  "**/*.js"];
+var srcJs = [util.src +  "**/*.js"],
+    srcText ;
+
+if (util.prepare && util.prepare.texttojs){
+  srcText = [
+      util.src +  "**/*.{" + util.prepare.texttojs.join(",") +"}",
+      "!" + util.src +  "**/*.js"
+  ];
+} 
 
 var dest = util.dest+"uncompressed/";
-
+console.log(util.pkg.name+":a");
 var requireConfig = {
-    baseUrl: util.src,
+    baseUrl: dest+util.pkg.name,
     out : util.pkg.name + ".js",
     packages : [{
        name : util.pkg.name ,
-       location :  util.src
+       location :  dest+util.pkg.name
     }],
     paths: {
     },
@@ -38,14 +47,25 @@ Array.prototype.push.apply(requireConfig.exclude,util.rjspkgs.names);
 
 
 module.exports = function() {
-    var p =  new Promise(function(resolve, reject) {
-     gulp.src(src)
+    var promises = [];
+    promises.push( new Promise(function(resolve, reject) {
+     gulp.src(srcJs)
         .on("error", reject)
         .pipe(gulp.dest(dest+util.pkg.name))
         .on("end",resolve);
-    });
+    }) );
 
-    return p.then(function(){
+    if (srcText) {
+        promises.push( new Promise(function(resolve, reject) {
+            gulp.src(srcText)
+                .on("error", reject)
+                .pipe(texttojs())
+                .pipe(gulp.dest(dest+util.pkg.name))
+                .on("end",resolve);
+        }) );
+    }
+
+    return Promise.all(promises).then(function(){
         return amdOptimize(requireConfig)
            .on("error",util.log)
            .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))

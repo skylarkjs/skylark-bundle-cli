@@ -7,6 +7,9 @@ var gutil = require('gulp-util'),
     prjRoot = argv.prjRoot; 
 
 var pkg = require(path.resolve(prjRoot,'./package.json')),
+    skylarkjs = pkg.skylarkjs,
+    build = skylarkjs && skylarkjs.build,
+    prepare = build && build.prepare,
     rjspkgs = {
         names : [],
         namelocs : []
@@ -69,5 +72,6 @@ module.exports = {
     allinoneFooter : path.resolve(__dirname ,'../../scripts/allinone-js.footer'),
     pkg: pkg,
     log : log,
-    rjspkgs : rjspkgs
+    rjspkgs : rjspkgs,
+    prepare
 };

@@ -13,16 +13,16 @@ var gulp = require('gulp'),
      fs = require('fs');
 
 
-var src = [util.src +  "**/*.js"];
+var src = [util.dest+"uncompressed/" + util.pkg.name + "/**/*.js"];
 
 var dest = util.dest;
 
 var requireConfig = {
-    baseUrl: util.src,
-    out : util.pkg.name + "-all.js",
+    baseUrl: util.dest+"uncompressed/"+ util.pkg.name,
+    out : util.pkg.name + ".js",
     packages : [{
        name : util.pkg.name ,
-       location :  util.src
+       location :  util.dest+"uncompressed/"+ util.pkg.name 
     }],
     paths: {
     },

@@ -27,7 +27,7 @@
   "bugs": "https://github.com/skylarkjs/skylark/issues",
   "dependencies": {
     "del": "^1.2.1",
-    "uglify-es": "^3.0.0",
+    "fancy-log": "^1.0.0",
     "gulp": "^3.9.0",
     "gulp-amd-optimizer": "^0.3.4",
     "gulp-autoprefixer": "^2.3.1",
@@ -43,11 +43,12 @@
     "gulp-requirejs": "^1.0.0",
     "gulp-runner": "^1.1.0",
     "gulp-sourcemaps": "^1.5.2",
+    "gulp-texttojs": "^1.0.3",
     "gulp-uglify": "^3.0.0",
     "gulp-usemin": "^0.3.11",
-    "fancy-log": "^1.0.0",
     "lru-cache": "^4.1.1",
     "run-sequence": "^2.1.0",
+    "uglify-es": "^3.0.0",
     "yargs": "^12.0.2"
   },
   "engines": {
