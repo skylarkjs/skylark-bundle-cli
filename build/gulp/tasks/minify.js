@@ -1,11 +1,12 @@
 var gulp = require('gulp'),
     concat = require('gulp-concat'),
-    gutil = require('gulp-util'),
     header = require('gulp-header'),
     footer = require('gulp-footer'),
     sourceMaps = require('gulp-sourcemaps'),
     amdOptimize = require('gulp-requirejs'),
-    uglify = require('gulp-uglify'),
+    uglifyes = require('uglify-es'),
+    composer = require('gulp-uglify/composer'),
+    uglify = composer(uglifyes, console),
     replace = require('gulp-replace'),
     rename = require("gulp-rename"),
     util = require('../utils'),
@@ -52,7 +53,7 @@ module.exports = function() {
 
     return p.then(function(){
         return amdOptimize(requireConfig)
-            .on("error",gutil.log)
+            .on("error",util.log)
             .pipe(sourceMaps.init())
             .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
             .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))

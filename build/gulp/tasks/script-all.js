@@ -1,6 +1,5 @@
 var gulp = require('gulp'),
     concat = require('gulp-concat'),
-    gutil = require('gulp-util'),
     header = require('gulp-header'),
     footer = require('gulp-footer'),
     sourceMaps = require('gulp-sourcemaps'),
@@ -38,7 +37,7 @@ Array.prototype.push.apply(requireConfig.packages,util.rjspkgs.namelocs);
 
 module.exports = function() {
     return amdOptimize(requireConfig)
-            .on("error",gutil.log)
+            .on("error",util.log)
         .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
         .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
         .pipe(header(util.banner, {

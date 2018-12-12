@@ -1,5 +1,7 @@
 var gutil = require('gulp-util'),
     path = require('path'),
+    log = require('fancy-log'),
+
     fs = require('fs'),
     argv = require('yargs').argv,
     prjRoot = argv.prjRoot; 
@@ -66,5 +68,6 @@ module.exports = {
     allinoneHeader : path.resolve(__dirname ,'../../scripts/allinone-js.header'),
     allinoneFooter : path.resolve(__dirname ,'../../scripts/allinone-js.footer'),
     pkg: pkg,
+    log : log,
     rjspkgs : rjspkgs
 };
