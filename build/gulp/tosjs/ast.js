@@ -14,12 +14,11 @@ class AbstractSyntaxTree {
     options = options || {}
     if (typeof source === 'string') {
       this.source = source;
-      console.log("parse");
       this.ast = this.constructor.parse(source, {
         attachComment: options.comments,
         comment: options.comments,
         loc: true,
-        ecmaVersion : 8,
+        ecmaVersion : 9,
         ecmaFeatures: {
           // enable parsing of arrow functions
           arrowFunctions: true,
@@ -88,7 +87,7 @@ class AbstractSyntaxTree {
           // enable return in global scope
           globalReturn: true,
 
-                jsx: options.jsx
+          jsx: options.jsx
         },
         sourceType: 'module'
       })
