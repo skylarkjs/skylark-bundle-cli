@@ -9,6 +9,8 @@ var gulp = require('gulp'),
     rename = require("gulp-rename"),
     texttojs = require('gulp-texttojs'),
     util = require('../utils'),
+    es6toamd = require('../tosjs/es6tosjs'),
+    noop = require("gulp-noop"),
     fs = require('fs');
 
 
@@ -51,6 +53,7 @@ module.exports = function() {
     promises.push( new Promise(function(resolve, reject) {
      gulp.src(srcJs)
         .on("error", reject)
+        .pipe(util.prepare && util.prepare.es6toamd ? es6toamd() : noop())
         .pipe(gulp.dest(dest+util.pkg.name))
         .on("end",resolve);
     }) );
@@ -66,14 +69,7 @@ module.exports = function() {
     }
 
     return Promise.all(promises).then(function(){
-        return amdOptimize(requireConfig)
-           .on("error",util.log)
-           .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
-            .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
-            .pipe(header(util.banner, {
-                pkg: util.pkg
-            })) 
-            .pipe(gulp.dest(dest));
+        return true;
     })
 
 };
