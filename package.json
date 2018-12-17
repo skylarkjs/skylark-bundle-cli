@@ -26,7 +26,6 @@
   "license": "MIT",
   "bugs": "https://github.com/skylarkjs/skylark/issues",
   "dependencies": {
-    "@buxlabs/gulp-es6-to-amd": "^1.4.0",
     "comparify": "^0.2.0",
     "del": "^1.2.1",
     "escodegen": "^1.9.0",
@@ -48,7 +47,7 @@
     "gulp-noop": "^1.0.0",
     "gulp-rename": "~1.2.2",
     "gulp-replace": "^0.6.1",
-    "gulp-requirejs": "^1.0.0",
+    "gulp-requirejs": "^1.2.1",
     "gulp-runner": "^1.1.0",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-texttojs": "^1.0.3",
