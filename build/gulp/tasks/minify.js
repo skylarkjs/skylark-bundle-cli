@@ -40,10 +40,7 @@ module.exports = function() {
     var p =  new Promise(function(resolve, reject) {
         gulp.src(src)
             .pipe(sourceMaps.init())
-            .pipe(uglify({
-                      ecma: 9,
-                      spread:true
-            }))
+            .pipe(uglify())
             .on("error", reject)
             .pipe(header(util.banner, {
                 pkg: util.pkg

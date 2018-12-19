@@ -75,6 +75,8 @@ module.exports = function() {
 
     return Promise.all(promises).then(function(){
         return true;
+    },function(e){
+        console.error(e);
     })
 
 };
