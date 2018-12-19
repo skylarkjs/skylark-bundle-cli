@@ -1,4 +1,5 @@
-var gulp = require('gulp'),
+var path = require('path'),
+    gulp = require('gulp'),
     concat = require('gulp-concat'),
     header = require('gulp-header'),
     footer = require('gulp-footer'),
@@ -11,6 +12,7 @@ var gulp = require('gulp'),
     util = require('../utils'),
     es6toamd = require('../tosjs/es6tosjs'),
     noop = require("gulp-noop"),
+    babel = require('gulp-babel'),    
     fs = require('fs');
 
 
@@ -53,6 +55,9 @@ module.exports = function() {
     promises.push( new Promise(function(resolve, reject) {
      gulp.src(srcJs)
         .on("error", reject)
+        .pipe(util.prepare && util.prepare.jsxtojs ? babel({
+            plugins: [path.join(__dirname, '../../../node_modules/@babel/plugin-transform-react-jsx/lib/index.js')]
+         }) : noop())
         .pipe(util.prepare && util.prepare.es6toamd ? es6toamd() : noop())
         .pipe(gulp.dest(dest+util.pkg.name))
         .on("end",resolve);

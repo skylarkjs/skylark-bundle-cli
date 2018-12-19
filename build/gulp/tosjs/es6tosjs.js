@@ -10,21 +10,21 @@ module.exports = function (options) {
         if (file.isStream()) {
             return callback(new PluginError('gulp-es6-to-amd', 'Streaming not supported'));
         }
-        try {
+//        try {
             data = file.contents.toString('utf8');
             if (data.indexOf('import') !== -1 || data.indexOf('export') !== -1) {
                 file.contents = new Buffer(Es6Module.converter(data));
             }
             this.push(file);
-        } catch (err) {
-            if (!options.silent) {
-                err.message = err.message ? `${err.message} in ${file.path}` : 'Unknown error';
-                this.emit('error', new PluginError('gulp-es6-to-amd', err, {
-                    fileName: file.path,
-                    showProperties: false
-                }));
-            }
-        }
+//        } catch (err) {
+//            if (!options.silent) {
+//                err.message = err.message ? `${err.message} in ${file.path}` : 'Unknown error';
+//                this.emit('error', new PluginError('gulp-es6-to-amd', err, {
+//                    fileName: file.path,
+//                    showProperties: false
+//                }));
+//            }
+//        }
 
         callback();
     });

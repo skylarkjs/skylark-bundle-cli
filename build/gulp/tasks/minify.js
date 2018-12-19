@@ -12,7 +12,6 @@ var gulp = require('gulp'),
     util = require('../utils'),
     fs = require('fs');
 
-
 var src = [util.dest+"uncompressed/" + util.pkg.name + "/**/*.js"];
 
 var dest = util.dest;
@@ -41,7 +40,10 @@ module.exports = function() {
     var p =  new Promise(function(resolve, reject) {
         gulp.src(src)
             .pipe(sourceMaps.init())
-            .pipe(uglify())
+            .pipe(uglify({
+                      ecma: 9,
+                      spread:true
+            }))
             .on("error", reject)
             .pipe(header(util.banner, {
                 pkg: util.pkg
@@ -57,7 +59,10 @@ module.exports = function() {
             .pipe(sourceMaps.init())
             .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
             .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
-            .pipe(uglify())
+            .pipe(uglify({
+                      ecma: 9,
+                      spread:true
+            }))
             .pipe(header(util.banner, {
                 pkg: util.pkg
             })) 

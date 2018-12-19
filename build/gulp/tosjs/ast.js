@@ -1,7 +1,7 @@
 'use strict'
 
 const espree = require('espree')
-const esquery = require('esquery')
+const esquery = require('esquery-jsx/jsx') //require('esquery')
 const escodegen = require('escodegen')
 const estraverse = require('estraverse')
 const template = require('estemplate')
@@ -87,7 +87,7 @@ class AbstractSyntaxTree {
           // enable return in global scope
           globalReturn: true,
 
-          jsx: options.jsx
+          jsx: true //options.jsx
         },
         sourceType: 'module'
       })
