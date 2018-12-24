@@ -74,7 +74,16 @@ module.exports = function() {
     }
 
     return Promise.all(promises).then(function(){
-        return true;
+        return amdOptimize(requireConfig)
+            .on("error",util.log)
+            .pipe(sourceMaps.init())
+            .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
+            .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
+            .pipe(header(util.banner, {
+                pkg: util.pkg
+            })) 
+            .pipe(sourceMaps.write("sourcemaps"))
+            .pipe(gulp.dest(dest));    
     },function(e){
         console.error(e);
     })

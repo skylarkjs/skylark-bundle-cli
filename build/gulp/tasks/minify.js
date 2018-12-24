@@ -56,10 +56,7 @@ module.exports = function() {
             .pipe(sourceMaps.init())
             .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
             .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
-            .pipe(uglify({
-                      ecma: 9,
-                      spread:true
-            }))
+            .pipe(uglify())
             .pipe(header(util.banner, {
                 pkg: util.pkg
             })) 

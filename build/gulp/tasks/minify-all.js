@@ -18,7 +18,7 @@ var dest = util.dest;
 
 var requireConfig = {
     baseUrl: util.dest+"uncompressed/"+ util.pkg.name,
-    out : util.pkg.name + ".js",
+    out : util.pkg.name + "-all.js",
     packages : [{
        name : util.pkg.name ,
        location :  util.dest+"uncompressed/"+ util.pkg.name 
@@ -43,7 +43,6 @@ module.exports = function() {
         .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
         .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
         .pipe(uglify())
-        .on("error",util.log)
         .pipe(header(util.banner, {
             pkg: util.pkg
         })) 
