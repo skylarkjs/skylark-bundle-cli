@@ -2,6 +2,7 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     header = require('gulp-header'),
     footer = require('gulp-footer'),
+    noop = require("gulp-noop"),
     sourceMaps = require('gulp-sourcemaps'),
     amdOptimize = require('gulp-requirejs'),
     uglifyes = require('uglify-es'),
@@ -40,6 +41,9 @@ module.exports = function() {
     return amdOptimize(requireConfig)
         .on("error",util.log)
         .pipe(sourceMaps.init())
+        .pipe(util.bundle && util.bundle.initOnLoad ? footer(util.initOnLoadScript,{
+            pkg: util.pkg
+        }) : noop())
         .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
         .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
         .pipe(uglify())

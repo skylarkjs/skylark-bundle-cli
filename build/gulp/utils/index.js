@@ -10,6 +10,7 @@ var pkg = require(path.resolve(prjRoot,'./package.json')),
     skylarkjs = pkg.skylarkjs,
     build = skylarkjs && skylarkjs.build,
     prepare = build && build.prepare,
+    bundle = build && build.bundle,
     rjspkgs = {
         names : [],
         namelocs : []
@@ -63,15 +64,25 @@ var banner = ['/**',
     ''
 ].join('\n');
 
+var initOnLoadScript = [
+    'try {',
+    '    require("<%= pkg.name %>");',
+    '} catch(e) {',
+    '    console.error("please use skylark-requirejs");',
+    '}'
+].join('\n');
+
 module.exports = {
     prjRoot : prjRoot,
     src: path.resolve(prjRoot,'./src') + '/',
     dest: path.resolve(prjRoot,'./dist') + '/',
     banner: banner,
+    initOnLoadScript:initOnLoadScript,
     allinoneHeader : path.resolve(__dirname ,'../../scripts/allinone-js.header'),
     allinoneFooter : path.resolve(__dirname ,'../../scripts/allinone-js.footer'),
     pkg: pkg,
     log : log,
     rjspkgs : rjspkgs,
-    prepare
+    prepare,
+    bundle
 };

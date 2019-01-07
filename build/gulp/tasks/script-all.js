@@ -2,6 +2,7 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     header = require('gulp-header'),
     footer = require('gulp-footer'),
+    noop = require("gulp-noop"),
     sourceMaps = require('gulp-sourcemaps'),
     amdOptimize = require('gulp-requirejs'),
     uglify = require('gulp-uglify'),
@@ -33,10 +34,12 @@ var requireConfig = {
 
 Array.prototype.push.apply(requireConfig.packages,util.rjspkgs.namelocs);
 
-
 module.exports = function() {
     return amdOptimize(requireConfig)
             .on("error",util.log)
+        .pipe(util.bundle && util.bundle.initOnLoad ? footer(util.initOnLoadScript,{
+            pkg: util.pkg
+        }) : noop())
         .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
         .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
         .pipe(header(util.banner, {
