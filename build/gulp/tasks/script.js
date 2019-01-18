@@ -11,6 +11,7 @@ var path = require('path'),
     texttojs = require('gulp-texttojs'),
     util = require('../utils'),
     es6toamd = require('../tosjs/es6tosjs'),
+    cjstoamd = require('../tosjs/cjstosjs'),
     noop = require("gulp-noop"),
     babel = require('gulp-babel'),    
     fs = require('fs');
@@ -52,13 +53,22 @@ Array.prototype.push.apply(requireConfig.exclude,util.rjspkgs.names);
 
 module.exports = function() {
     var promises = [];
+    var moduleCovert = noop;
+    if (util.prepare) {
+        if (util.prepare.es6toamd ) {
+            moduleCovert = es6toamd;
+        } else if (util.prepare.cjstoamd) {
+            moduleCovert = cjstoamd;
+        }
+
+    }
     promises.push( new Promise(function(resolve, reject) {
      gulp.src(srcJs)
         .on("error", reject)
         .pipe(util.prepare && util.prepare.jsxtojs ? babel({
             plugins: [path.join(__dirname, '../../../node_modules/@babel/plugin-transform-react-jsx/lib/index.js')]
          }) : noop())
-        .pipe(util.prepare && util.prepare.es6toamd ? es6toamd() : noop())
+        .pipe(moduleCovert())
         .pipe(gulp.dest(dest+util.pkg.name))
         .on("end",resolve);
     }) );
