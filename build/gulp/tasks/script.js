@@ -64,6 +64,7 @@ module.exports = function() {
     }
     promises.push( new Promise(function(resolve, reject) {
      gulp.src(srcJs)
+        .on("error",util.log)
         .on("error", reject)
         .pipe(util.prepare && util.prepare.jsxtojs ? babel({
             plugins: [path.join(__dirname, '../../../node_modules/@babel/plugin-transform-react-jsx/lib/index.js')]
@@ -76,6 +77,7 @@ module.exports = function() {
     if (srcText) {
         promises.push( new Promise(function(resolve, reject) {
             gulp.src(srcText)
+                .on("error",util.log)
                 .on("error", reject)
                 .pipe(texttojs())
                 .pipe(gulp.dest(dest+util.pkg.name))
