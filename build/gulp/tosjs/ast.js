@@ -18,7 +18,7 @@ class AbstractSyntaxTree {
         attachComment: options.comments,
         comment: options.comments,
         loc: true,
-        ecmaVersion : 9,
+        ecmaVersion : 10,
         ecmaFeatures: {
           // enable parsing of arrow functions
           arrowFunctions: true,

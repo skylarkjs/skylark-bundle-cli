@@ -46,7 +46,11 @@ module.exports = function() {
         }) : noop())
         .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
         .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
-        .pipe(uglify())
+        .pipe(uglify({
+            mangle: { 
+                reserved: ['require','exports','module']
+            }                
+        }))
         .pipe(header(util.banner, {
             pkg: util.pkg
         })) 
