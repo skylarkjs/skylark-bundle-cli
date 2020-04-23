@@ -1,6 +1,6 @@
 'use strict'
 
-const espree = require('espree')
+const espree = require("../../lib/esprima"); //require('espree')
 const esquery = require('esquery-jsx/jsx') //require('esquery')
 const escodegen = require('escodegen')
 const estraverse = require('estraverse')
