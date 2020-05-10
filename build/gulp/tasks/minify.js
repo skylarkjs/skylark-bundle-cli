@@ -34,7 +34,12 @@ var requireConfig = {
 };
 
 Array.prototype.push.apply(requireConfig.packages,util.rjspkgs.namelocs);
-Array.prototype.push.apply(requireConfig.exclude,util.rjspkgs.names);
+//Array.prototype.push.apply(requireConfig.exclude,util.rjspkgs.names);
+
+var include = util.bundle && util.bundle.standard && util.bundle.standard.include;
+requireConfig.exclude = util.rjspkgs.names.filter(function(name){
+    return !(include && include.indexOf(name)>-1);
+});
 
 module.exports = function() {
     var p =  new Promise(function(resolve, reject) {

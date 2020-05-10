@@ -11,6 +11,7 @@ var pkg = require(path.resolve(prjRoot,'./package.json')),
     build = skylarkjs && skylarkjs.build,
     prepare = build && build.prepare,
     bundle = build && build.bundle,
+    packages = build && build.packages,
     rjspkgs = {
         names : [],
         namelocs : []
@@ -43,6 +44,17 @@ for (var i = 0; i < dependencies.length;i++) {
             location : path.resolve(prjRoot,"./node_modules",name,"./dist/uncompressed/",name)+'/'
         });
         console.log(name+":" + path.resolve(prjRoot,"./node_modules",name,"./dist/uncompressed/",name)+'/');        
+    }
+}
+
+if (packages) {
+    for (var name in packages) {
+        rjspkgs.names.push(name);
+        rjspkgs.namelocs.push({
+            name : name,
+            location : path.resolve(prjRoot,packages[name]) + "/" 
+        });
+        console.log(name+":" + path.resolve(prjRoot,packages[name])+ "/");        
     }
 }
 
@@ -84,5 +96,6 @@ module.exports = {
     log : log,
     rjspkgs : rjspkgs,
     prepare,
-    bundle
+    bundle,
+    packages
 };
