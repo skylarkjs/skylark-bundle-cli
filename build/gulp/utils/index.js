@@ -7,17 +7,19 @@ var gutil = require('gulp-util'),
     prjRoot = argv.prjRoot; 
 
 var pkg = require(path.resolve(prjRoot,'./package.json')),
-    skylarkjs = pkg.skylarkjs,
+    skylarkjs = pkg.skylarkjs || {},
+    directories = skylarkjs && skylarkjs.directories ,
+    dirDependencies = directories && directories.dependencies,
     build = skylarkjs && skylarkjs.build,
     prepare = build && build.prepare,
     bundle = build && build.bundle,
-    packages = build && build.packages,
+    secondaries = skylarkjs && skylarkjs.secondaries,
     rjspkgs = {
         names : [],
         namelocs : []
     };
 
-console.log("required packages:")
+console.log("dependencied packages:")
 
 
 /*
@@ -33,28 +35,30 @@ if (devDependencies) {
     }
 }
 */
-
-var dependencies =  fs.readdirSync(path.resolve(prjRoot,"./node_modules"));
+console.log("dependencied packages:")
+var dependenciesRoot = path.resolve(prjRoot,dirDependencies || "./node_modules"),
+    dependencies =  fs.readdirSync(dependenciesRoot);
 for (var i = 0; i < dependencies.length;i++) {
     var name = dependencies[i];
     if(name.match(/^[A-Za-z]/i)) {
         rjspkgs.names.push(name);
         rjspkgs.namelocs.push({
             name : name,
-            location : path.resolve(prjRoot,"./node_modules",name,"./dist/uncompressed/",name)+'/'
+            location : path.resolve(dependenciesRoot,name,"./dist/uncompressed/",name)+'/'
         });
-        console.log(name+":" + path.resolve(prjRoot,"./node_modules",name,"./dist/uncompressed/",name)+'/');        
+        console.log(name+":" + path.resolve(dependenciesRoot,name,"./dist/uncompressed/",name)+'/');        
     }
 }
 
-if (packages) {
-    for (var name in packages) {
+if (secondaries) {
+    console.log("secondary packages:")
+    for (var name in secondaries) {
         rjspkgs.names.push(name);
         rjspkgs.namelocs.push({
             name : name,
-            location : path.resolve(prjRoot,packages[name]) + "/" 
+            location : path.resolve(prjRoot,secondaries[name]) + "/" 
         });
-        console.log(name+":" + path.resolve(prjRoot,packages[name])+ "/");        
+        console.log(name+":" + path.resolve(prjRoot,secondaries[name])+ "/");        
     }
 }
 
@@ -97,5 +101,5 @@ module.exports = {
     rjspkgs : rjspkgs,
     prepare,
     bundle,
-    packages
+    secondaries
 };
