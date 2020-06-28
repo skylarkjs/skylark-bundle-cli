@@ -12,7 +12,7 @@ var pkg = require(path.resolve(prjRoot,'./package.json')),
     dirDependencies = directories && directories.dependencies,
     build = skylarkjs && skylarkjs.build,
     prepare = build && build.prepare,
-    bundle = build && build.bundle,
+    bundles = build && build.bundles,
     secondaries = skylarkjs && skylarkjs.secondaries,
     rjspkgs = {
         names : [],
@@ -100,6 +100,6 @@ module.exports = {
     log : log,
     rjspkgs : rjspkgs,
     prepare,
-    bundle,
+    bundles,
     secondaries
 };

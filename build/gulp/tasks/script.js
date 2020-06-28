@@ -31,7 +31,7 @@ var dest = util.dest+"uncompressed/";
 console.log(util.pkg.name+":a");
 var requireConfig = {
     baseUrl: dest+util.pkg.name,
-    out : util.pkg.name + ".js",
+//    out : util.pkg.name + ".js",
     packages : [{
        name : util.pkg.name ,
        location :  dest+util.pkg.name
@@ -39,25 +39,23 @@ var requireConfig = {
     paths: {
     },
 //    name : "skylark/main",
+//    exclude: [
+//    ],
 
     include: [
         util.pkg.name + "/main"
-    ],
-    exclude: [
     ]
 };
 
 Array.prototype.push.apply(requireConfig.packages,util.rjspkgs.namelocs);
 
-//Array.prototype.push.apply(requireConfig.exclude,util.rjspkgs.names);
-
-var include = util.bundle && util.bundle.standard && util.bundle.standard.include;
-requireConfig.exclude = util.rjspkgs.names.filter(function(name){
-    return !(include && include.indexOf(name)>-1);
-});
+//var include = util.bundle && util.bundle.standard && util.bundle.standard.include;
+//requireConfig.exclude = util.rjspkgs.names.filter(function(name){
+//    return !(include && include.indexOf(name)>-1);
+//});
 
 
-module.exports = function() {
+function build(){
     var promises = [];
     var moduleCovert = noop;
     if (util.prepare) {
@@ -91,19 +89,69 @@ module.exports = function() {
         }) );
     }
 
-    return Promise.all(promises).then(function(){
-        return amdOptimize(requireConfig)
-            .on("error",util.log)
-            .pipe(sourceMaps.init())
-            .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
-            .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
-            .pipe(header(util.banner, {
-                pkg: util.pkg
-            })) 
-            .pipe(sourceMaps.write("sourcemaps"))
-            .pipe(gulp.dest(dest));    
+    return Promise.all(promises);
+}
+
+function bundle(bundleName,bundleConfig) {
+    let rqConfig = Object.assign({},requireConfig),
+        suffix,
+        include = bundleConfig.include;
+    if (bundleName=="alone") {
+        suffix = ""
+    } else {
+        suffix = "-" + bundleName;
+    }
+    rqConfig.exclude = util.rjspkgs.names.filter(function(pkgName){
+        let isExcluded = true;
+        if (bundleName=="alone") {
+            isExcluded = true;
+        } else {
+            if (bundleName=="all") {
+                isExcluded = false;
+            } else {
+
+                isExcluded = !(include && include.indexOf(pkgName)>-1);
+            }
+        }
+        return isExcluded;
+    });
+
+    rqConfig.out = util.pkg.name + suffix + ".js",
+
+    console.log("bundle " +  bundleName);
+
+    return amdOptimize(rqConfig)
+        .on("error",util.log)
+        .pipe(sourceMaps.init())
+        .pipe(header(fs.readFileSync(util.allinoneHeader, 'utf8')))
+        .pipe(footer(fs.readFileSync(util.allinoneFooter, 'utf8')))
+        .pipe(header(util.banner, {
+            pkg: util.pkg
+        })) 
+        .pipe(sourceMaps.write("sourcemaps"))
+        .pipe(gulp.dest(dest)) 
+}
+
+module.exports = function() {
+    return build().then(function(){
+        var promises2 = [],
+            bundles = util.bundles || {};
+
+        bundles.alone = true;
+
+        for (let bundleName in bundles) {
+            if (bundles[bundleName]) {
+                promises2.push(bundle(bundleName,bundles[bundleName]));
+            }
+        }
+
+        return Promise.all(promises2).catch(function(e){
+            console.error(e);
+            return Promise.reject(e);
+        });
     },function(e){
         console.error(e);
+        return Promise.reject(e);
     })
 
 };

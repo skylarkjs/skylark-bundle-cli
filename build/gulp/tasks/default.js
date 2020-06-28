@@ -6,9 +6,7 @@ module.exports = function(callback) {
 	return runSequence(
     	'clean',
     	'script',
-    	'script-all',
     	'minify',
-    	'minify-all',
     	callback
   	);
 };
