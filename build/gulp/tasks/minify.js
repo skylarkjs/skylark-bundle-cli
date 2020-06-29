@@ -8,19 +8,18 @@ var path = require('path'),
     uglifyes = require('uglify-es'),
     composer = require('gulp-uglify/composer'),
     uglify = composer(uglifyes, console),
-
     replace = require('gulp-replace'),
     rename = require("gulp-rename"),
-    texttojs = require('gulp-texttojs'),
     util = require('../utils'),
-    es6toamd = require('../tosjs/es6tosjs'),
-    cjstoamd = require('../tosjs/cjstosjs'),
-    noop = require("gulp-noop"),
-    babel = require('gulp-babel'),    
     fs = require('fs');
 
 
-var src = [util.dest+"uncompressed/" + util.pkg.name + "*.js"];
+var srcPkgs = [{
+      pkgName : util.pkg.name,
+      pkgSrcJs :   util.dest+"uncompressed/" + util.pkg.name +  "/**/*.js"
+    }];
+
+var src = [util.dest+"uncompressed/" + util.pkg.name +  "/**/*.js"];
 
 var dest = util.dest;
 
@@ -43,6 +42,22 @@ var requireConfig = {
     ]
 };
 
+if (util.secondaries) {
+    for (var secondaryPkgName in util.secondaries) {
+        srcPkgs.push({
+          pkgName : secondaryPkgName,
+          pkgSrcJs :   util.dest+"uncompressed/" + secondaryPkgName +  "/**/*.js"
+
+        });
+
+        requireConfig.packages.push({
+            name : secondaryPkgName,
+            location : util.dest+"uncompressed/"+ secondaryPkgName
+        });
+    }    
+}
+
+
 Array.prototype.push.apply(requireConfig.packages,util.rjspkgs.namelocs);
 
 //var include = util.bundle && util.bundle.standard && util.bundle.standard.include;
@@ -52,23 +67,28 @@ Array.prototype.push.apply(requireConfig.packages,util.rjspkgs.namelocs);
 
 
 function build(){
-    var p =  new Promise(function(resolve, reject) {
-        gulp.src(src)
-            .pipe(sourceMaps.init())
-            .pipe(uglify({
-                mangle: { 
-                    reserved: ['require','exports','module']
-                }                
-            }))
-            .on("error", reject)
-            .pipe(header(util.banner, {
-                pkg: util.pkg
-            }) )
-            .pipe(sourceMaps.write("sourcemaps"))
-            .pipe(gulp.dest(dest+util.pkg.name))
-            .on("end",resolve);
-    });
-    return p;
+    var promises = [];
+
+    for (var i =0; i<srcPkgs.length;i++) {
+        let srcPkg = srcPkgs[i];
+        promises.push(new Promise(function(resolve, reject) {
+            gulp.src(srcPkg.pkgSrcJs)
+                .pipe(sourceMaps.init())
+                .pipe(uglify({
+                    mangle: { 
+                        reserved: ['require','exports','module']
+                    }                
+                }))
+                .on("error", reject)
+                .pipe(header(util.banner, {
+                    pkg: util.pkg
+                }) )
+                .pipe(sourceMaps.write("sourcemaps"))
+                .pipe(gulp.dest(dest+srcPkg.pkgName))
+                .on("end",resolve);
+        }));
+    }
+    return Promise.all(promises);
 }
 
 function bundle(bundleName,bundleConfig) {

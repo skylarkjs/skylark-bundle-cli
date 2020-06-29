@@ -16,19 +16,20 @@ var path = require('path'),
     babel = require('gulp-babel'),    
     fs = require('fs');
 
-
-var srcJs = [util.src +  "**/*.js"],
-    srcText ;
+var srcPkgs = [{
+      pkgName : util.pkg.name,
+      pkgSrcJs :   util.src +  "**/*.js"
+    }];
 
 if (util.prepare && util.prepare.texttojs){
-  srcText = [
+  srcPkgs[0].pkgSrcTxt = [
       util.src +  "**/*.{" + util.prepare.texttojs.join(",") +"}",
       "!" + util.src +  "**/*.js"
   ];
 } 
 
 var dest = util.dest+"uncompressed/";
-console.log(util.pkg.name+":a");
+console.log("Building package:" + util.pkg.name);
 var requireConfig = {
     baseUrl: dest+util.pkg.name,
 //    out : util.pkg.name + ".js",
@@ -46,6 +47,30 @@ var requireConfig = {
         util.pkg.name + "/main"
     ]
 };
+
+if (util.secondaries) {
+    for (let secondaryPkgName in util.secondaries) {
+        let secondaryPkgSrcDir = path.resolve(util.prjRoot,util.secondaries[secondaryPkgName]) + "/",
+            secondarySrcPkg = {
+                pkgName : secondaryPkgName,
+                pkgSrcJs : secondaryPkgSrcDir  +  "**/*.js"
+            };
+
+        if (util.prepare && util.prepare.texttojs){
+          secondarySrcPkg.pkgSrcTxt = [
+              secondaryPkgSrcDir +  "**/*.{" + util.prepare.texttojs.join(",") +"}",
+              "!" + secondaryPkgSrcDir +  "**/*.js"
+          ];
+        } 
+
+        srcPkgs.push(secondarySrcPkg);
+
+        requireConfig.packages.push({
+            name : secondaryPkgName,
+            location : util.dest+"uncompressed/"+ secondaryPkgName
+        });
+    }    
+}
 
 Array.prototype.push.apply(requireConfig.packages,util.rjspkgs.namelocs);
 
@@ -66,27 +91,31 @@ function build(){
         }
 
     }
-    promises.push( new Promise(function(resolve, reject) {
-     gulp.src(srcJs)
-        .on("error",util.log)
-        .on("error", reject)
-        .pipe(util.prepare && util.prepare.jsxtojs ? babel({
-            plugins: [path.join(__dirname, '../../../node_modules/@babel/plugin-transform-react-jsx/lib/index.js')]
-         }) : noop())
-        .pipe(moduleCovert())
-        .pipe(gulp.dest(dest+util.pkg.name))
-        .on("end",resolve);
-    }) );
+    for (var i =0; i<srcPkgs.length;i++) {
+        let srcPkg = srcPkgs[i];
 
-    if (srcText) {
         promises.push( new Promise(function(resolve, reject) {
-            gulp.src(srcText)
-                .on("error",util.log)
-                .on("error", reject)
-                .pipe(texttojs())
-                .pipe(gulp.dest(dest+util.pkg.name))
-                .on("end",resolve);
+         gulp.src(srcPkg.pkgSrcJs)
+            .on("error",util.log)
+            .on("error", reject)
+            .pipe(util.prepare && util.prepare.jsxtojs ? babel({
+                plugins: [path.join(__dirname, '../../../node_modules/@babel/plugin-transform-react-jsx/lib/index.js')]
+             }) : noop())
+            .pipe(moduleCovert())
+            .pipe(gulp.dest(dest+srcPkg.pkgName))
+            .on("end",resolve);
         }) );
+
+        if (srcPkg.pkgSrcTxt) {
+            promises.push( new Promise(function(resolve, reject) {
+                gulp.src(srcPkg.pkgSrcTxt)
+                    .on("error",util.log)
+                    .on("error", reject)
+                    .pipe(texttojs())
+                    .pipe(gulp.dest(dest+srcPkg.pkgName))
+                    .on("end",resolve);
+            }) );
+        }
     }
 
     return Promise.all(promises);

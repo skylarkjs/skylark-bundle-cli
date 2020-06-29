@@ -10,6 +10,9 @@ var pkg = require(path.resolve(prjRoot,'./package.json')),
     skylarkjs = pkg.skylarkjs || {},
     directories = skylarkjs && skylarkjs.directories ,
     dirDependencies = directories && directories.dependencies,
+
+    internalDependencies = skylarkjs && skylarkjs.internalDependencies,
+
     build = skylarkjs && skylarkjs.build,
     prepare = build && build.prepare,
     bundles = build && build.bundles,
@@ -35,7 +38,7 @@ if (devDependencies) {
     }
 }
 */
-console.log("dependencied packages:")
+console.log("The packages dependencied:")
 var dependenciesRoot = path.resolve(prjRoot,dirDependencies || "./node_modules"),
     dependencies =  fs.readdirSync(dependenciesRoot);
 for (var i = 0; i < dependencies.length;i++) {
@@ -50,6 +53,20 @@ for (var i = 0; i < dependencies.length;i++) {
     }
 }
 
+if (internalDependencies) {
+    console.log("The packages dependencied internally:")
+    for (let pkgName in internalDependencies) {
+        let pkgDir = path.resolve(prjRoot,internalDependencies[pkgName],"./dist/uncompressed/",pkgName)+ "/"
+        rjspkgs.names.push(pkgName);
+        rjspkgs.namelocs.push({
+            name : pkgName,
+            location : pkgDir 
+        });
+        console.log(pkgName+":" + pkgDir);        
+    }
+}
+
+/*
 if (secondaries) {
     console.log("secondary packages:")
     for (var name in secondaries) {
@@ -61,7 +78,7 @@ if (secondaries) {
         console.log(name+":" + path.resolve(prjRoot,secondaries[name])+ "/");        
     }
 }
-
+*/
 
 const { lstatSync, readdirSync } = require('fs')
 
